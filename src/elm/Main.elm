@@ -1,8 +1,44 @@
 module Main exposing (..)
 
-import Html exposing (text)
+import Html
+    exposing
+        ( Html
+        , text
+        , form
+        , fieldset
+        , legend
+        , label
+        , input
+        , button
+        )
+import Html.Attributes exposing (type_)
 
 
-main : Html.Html a
+-- View
+
+
+view : a -> Html msg
+view _ =
+    Html.form []
+        [ fieldset []
+            [ legend [] [ text "Settings" ]
+            , label [] [ text "Length" ]
+            , input [ type_ "number" ] []
+            , label [] [ text "Modulus" ]
+            , input [ type_ "number" ] []
+            , button [] [ text "Plot" ]
+            ]
+        ]
+
+
+
+-- Program
+
+
+main : Program Never () msg
 main =
-    text "Hello World!"
+    Html.beginnerProgram
+        { model = ()
+        , update = curry Tuple.second
+        , view = view
+        }
