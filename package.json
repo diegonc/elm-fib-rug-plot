@@ -1,0 +1,17 @@
+{
+  "name": "elm-fib-rug-plot",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "dev": "webpack-dev-server --port 3000"
+  },
+  "dependencies": {
+    "elm-webpack-loader": "^4.2.0",
+    "file-loader": "^0.9.0",
+    "webpack": "^1.12.0",
+    "webpack-dev-server": "^1.14.0"
+  }
+}
