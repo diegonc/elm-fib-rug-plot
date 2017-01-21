@@ -11,7 +11,8 @@ import Html
         , input
         , button
         )
-import Html.Attributes exposing (type_, value, defaultValue)
+import Html.Attributes exposing (type_, value, style)
+import Html.Events exposing (onInput, onSubmit)
 
 
 -- Model
@@ -29,24 +30,55 @@ init =
 
 
 
+-- Update
+
+
+type Msg
+    = SetLength (Result String Int)
+    | SetModulus (Result String Int)
+    | GetDataToPlot
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        SetLength (Ok len) ->
+            { model | sequenceLength = len }
+
+        SetModulus (Ok modulus) ->
+            { model | modulus = modulus }
+
+        SetLength (Err errMsg) ->
+            model
+
+        SetModulus (Err errMsg) ->
+            model
+
+        GetDataToPlot ->
+            model
+
+
+
 -- View
 
 
-view : Model -> Html msg
+view : Model -> Html Msg
 view model =
-    Html.form []
+    Html.form [ onSubmit GetDataToPlot ]
         [ fieldset []
             [ legend [] [ text "Settings" ]
             , label [] [ text "Length" ]
             , input
                 [ type_ "number"
-                , defaultValue <| toString model.sequenceLength
+                , value <| toString model.sequenceLength
+                , onInput <| String.toInt >> SetLength
                 ]
                 []
             , label [] [ text "Modulus" ]
             , input
                 [ type_ "number"
-                , defaultValue <| toString model.modulus
+                , value <| toString model.modulus
+                , onInput <| String.toInt >> SetModulus
                 ]
                 []
             , button [] [ text "Plot" ]
@@ -58,10 +90,10 @@ view model =
 -- Program
 
 
-main : Program Never Model msg
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = init
-        , update = curry Tuple.second
+        , update = update
         , view = view
         }
