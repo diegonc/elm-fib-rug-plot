@@ -98,6 +98,7 @@ update msg model =
                 ( { model
                     | rawData = data
                     , plotData = Just <| rugPlot minTick maxTick points
+                    , errorMsg = Nothing
                   }
                 , Cmd.none
                 )
