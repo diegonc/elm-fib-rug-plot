@@ -1,7 +1,3 @@
 .plot {
   margin-top: 10px;
 }
-
-.plot svg line {
-  stroke: black;
-}

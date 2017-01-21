@@ -87,5 +87,6 @@ rugRenderTick x =
         , y1 "0"
         , y2 <| toString rugUserHeight
         , strokeWidth "1"
+        , stroke "black"
         ]
         []
