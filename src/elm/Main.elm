@@ -10,6 +10,7 @@ import Html
         , label
         , input
         , button
+        , div
         )
 import Html.Attributes exposing (type_, value, style)
 import Html.Events exposing (onInput, onSubmit)
@@ -21,12 +22,13 @@ import Html.Events exposing (onInput, onSubmit)
 type alias Model =
     { sequenceLength : Int
     , modulus : Int
+    , errorMsg : Maybe String
     }
 
 
 init : Model
 init =
-    Model 0 0
+    Model 0 0 Nothing
 
 
 
@@ -43,16 +45,22 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         SetLength (Ok len) ->
-            { model | sequenceLength = len }
+            { model
+                | sequenceLength = len
+                , errorMsg = Nothing
+            }
 
         SetModulus (Ok modulus) ->
-            { model | modulus = modulus }
+            { model
+                | modulus = modulus
+                , errorMsg = Nothing
+            }
 
         SetLength (Err errMsg) ->
-            model
+            { model | errorMsg = Just errMsg }
 
         SetModulus (Err errMsg) ->
-            model
+            { model | errorMsg = Just errMsg }
 
         GetDataToPlot ->
             model
@@ -82,6 +90,9 @@ view model =
                 ]
                 []
             , button [] [ text "Plot" ]
+            , div
+                [ style [ ( "color", "red" ) ] ]
+                [ text <| Maybe.withDefault "" model.errorMsg ]
             ]
         ]
 
