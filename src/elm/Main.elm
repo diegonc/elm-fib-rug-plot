@@ -11,21 +11,44 @@ import Html
         , input
         , button
         )
-import Html.Attributes exposing (type_)
+import Html.Attributes exposing (type_, value, defaultValue)
+
+
+-- Model
+
+
+type alias Model =
+    { sequenceLength : Int
+    , modulus : Int
+    }
+
+
+init : Model
+init =
+    Model 0 0
+
 
 
 -- View
 
 
-view : a -> Html msg
-view _ =
+view : Model -> Html msg
+view model =
     Html.form []
         [ fieldset []
             [ legend [] [ text "Settings" ]
             , label [] [ text "Length" ]
-            , input [ type_ "number" ] []
+            , input
+                [ type_ "number"
+                , defaultValue <| toString model.sequenceLength
+                ]
+                []
             , label [] [ text "Modulus" ]
-            , input [ type_ "number" ] []
+            , input
+                [ type_ "number"
+                , defaultValue <| toString model.modulus
+                ]
+                []
             , button [] [ text "Plot" ]
             ]
         ]
@@ -35,10 +58,10 @@ view _ =
 -- Program
 
 
-main : Program Never () msg
+main : Program Never Model msg
 main =
     Html.beginnerProgram
-        { model = ()
+        { model = init
         , update = curry Tuple.second
         , view = view
         }
