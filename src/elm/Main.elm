@@ -158,7 +158,7 @@ viewPlot : Maybe Plot.Data -> Html Msg
 viewPlot plotData =
     div [ class "plot" ]
         [ plotData
-            |> Maybe.map (render (Plot.Config 400 150))
+            |> Maybe.map (render (Plot.Config 400 75))
             |> Maybe.withDefault (text "")
         ]
 
