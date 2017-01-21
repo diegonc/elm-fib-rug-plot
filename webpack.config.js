@@ -22,6 +22,10 @@ module.exports = {
         test: /\.elm$/,
         exclude: [/elm-stuff/, /node_modules/],
         loader: 'elm-webpack?verbose=true&warn=true&debug=true'
+      },
+      {
+        test: /\.css$/,
+        loader: 'style!css!'
       }
     ],
 
