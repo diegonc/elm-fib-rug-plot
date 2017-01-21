@@ -12,10 +12,11 @@ import Html
         , button
         , div
         )
-import Html.Attributes exposing (type_, value, style)
+import Html.Attributes exposing (type_, value, style, class)
 import Html.Events exposing (onInput, onSubmit)
 import Api.Fibonacci exposing (ApiConf, fibSequenceRequest)
 import RemoteData exposing (RemoteData(..), WebData)
+import Plot exposing (rugPlot, render)
 
 
 -- Model
@@ -27,12 +28,13 @@ type alias Model =
     , modulus : Int
     , errorMsg : Maybe String
     , rawData : WebData (List Int)
+    , plotData : Maybe Plot.Data
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model (ApiConf "http://localhost:8001") 0 0 Nothing NotAsked, Cmd.none )
+    ( Model (ApiConf "http://localhost:8001") 0 0 Nothing NotAsked Nothing, Cmd.none )
 
 
 
@@ -76,11 +78,37 @@ update msg model =
                 { sequenceLength, modulus, apiConf } =
                     model
             in
-                ( { model | rawData = Loading }
+                ( { model
+                    | rawData = Loading
+                    , plotData = Nothing
+                  }
                 , fibSequenceRequest apiConf sequenceLength modulus
                     |> RemoteData.sendRequest
                     |> Cmd.map GotDataToPlot
                 )
+
+        GotDataToPlot ((Success points) as data) ->
+            let
+                minTick =
+                    0
+
+                maxTick =
+                    model.modulus
+            in
+                ( { model
+                    | rawData = data
+                    , plotData = Just <| rugPlot minTick maxTick points
+                  }
+                , Cmd.none
+                )
+
+        GotDataToPlot ((Failure err) as data) ->
+            ( { model
+                | rawData = data
+                , errorMsg = Just <| toString err
+              }
+            , Cmd.none
+            )
 
         GotDataToPlot data ->
             ( { model | rawData = data }, Cmd.none )
@@ -92,6 +120,14 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    div []
+        [ viewSettingsForm model
+        , viewPlot model.plotData
+        ]
+
+
+viewSettingsForm : Model -> Html Msg
+viewSettingsForm model =
     Html.form [ onSubmit GetDataToPlot ]
         [ fieldset []
             [ legend [] [ text "Settings" ]
@@ -114,6 +150,15 @@ view model =
                 [ style [ ( "color", "red" ) ] ]
                 [ text <| Maybe.withDefault "" model.errorMsg ]
             ]
+        ]
+
+
+viewPlot : Maybe Plot.Data -> Html Msg
+viewPlot plotData =
+    div [ class "plot" ]
+        [ plotData
+            |> Maybe.map (render (Plot.Config 400 150))
+            |> Maybe.withDefault (text "")
         ]
 
 
